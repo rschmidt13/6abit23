@@ -1,3 +1,4 @@
+-- Bsp 1
 drop table if exists l cascade;
 drop table if exists lv cascade;
 
@@ -46,3 +47,36 @@ WHERE id IN (
 
 select l.name from l,lv
 where l.id = lv.id and lv.fach = 'E';
+
+-- Bsp 2
+drop table if exists lehrer;
+drop table if exists schueler;
+
+create table lehrer (
+  name text,
+  alter int
+);
+
+
+create table schueler (
+  name text,
+  alter int
+);
+
+insert into lehrer values ('Max', 20), ('Franz', 21), ('Ernst', 22), ('Heinz', 23);
+insert into schueler values ('Max', 20), ('Franz', 22), ('Susi', 22), ('Heinz', 24);
+
+-- union mengenvereinigung
+-- except mengendifferenz
+-- intersect mengendurchschnitt
+
+select * from lehrer 
+intersect
+select * from schueler;
+
+select name from lehrer 
+intersect
+select name from schueler;
+
+-- aufgabe bitte mit elementaren operatoren lösen!
+
