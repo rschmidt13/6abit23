@@ -28,6 +28,7 @@ insert into lv values
 (3, 'D', 2, 2022);
 
 
+select * from l;
 
 -- die Namen aller Lehrer die Englisch unterichten
 
@@ -41,5 +42,7 @@ WHERE id IN (
     WHERE fach = 'E'
 );
 
-select * from l,lv
+-- 2. als Kreuzprodukt:
+
+select l.name from l,lv
 where l.id = lv.id and lv.fach = 'E';
