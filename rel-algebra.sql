@@ -26,3 +26,7 @@ insert into lv values
 (1, 'E', 4, 2022),
 (2, 'E', 6, 2022),
 (3, 'D', 2, 2022);
+
+-- die Namen aller Lehrer die Englisch unterichten
+
+-- 1. als Sub-select:
