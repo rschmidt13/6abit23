@@ -15,7 +15,7 @@ create table LV (
   jahr int
 );
 
-
+insert into l values
 (1, 'Max', 25, true),
 (2, 'Fritz', 31, false),
 (3, 'Gabi', 31, true),
@@ -41,5 +41,5 @@ WHERE id IN (
     WHERE fach = 'E'
 );
 
--- 2. als Kreuzprodukt:
-
+select * from l,lv
+where l.id = lv.id and lv.fach = 'E';
