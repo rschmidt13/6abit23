@@ -80,3 +80,5 @@ select name from schueler;
 
 -- aufgabe bitte mit elementaren operatoren lösen!
 
+-- das möchte ich nicht verlieren
+
