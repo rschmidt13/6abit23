@@ -41,3 +41,5 @@ WHERE id IN (
     WHERE fach = 'E'
 );
 
+-- 2. als Kreuzprodukt:
+
