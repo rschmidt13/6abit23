@@ -26,3 +26,11 @@ insert into lv values
 (1, 'E', 4, 2022),
 (2, 'E', 6, 2022),
 (3, 'D', 2, 2022);
+
+SELECT name
+FROM L
+WHERE id IN (
+    SELECT id
+    FROM LV
+    WHERE fach = 'E'
+);
