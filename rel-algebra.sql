@@ -49,8 +49,8 @@ select l.name from l,lv
 where l.id = lv.id and lv.fach = 'E';
 
 -- Bsp 2
-drop table if exists lehrer;
-drop table if exists schueler;
+drop table if exists lehrer cascade;
+drop table if exists schueler cascade;
 
 create table lehrer (
   name text,
@@ -74,8 +74,9 @@ select * from lehrer
 intersect
 select * from schueler;
 
-select name from lehrer 
-intersect
-select name from schueler;
+select name from lehrer except
+  (select name from lehrer except select name from schueler);
 
 -- aufgabe bitte mit elementaren operatoren lösen!
+
+
