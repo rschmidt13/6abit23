@@ -78,5 +78,37 @@ select name from lehrer except
   (select name from lehrer except select name from schueler);
 
 -- aufgabe bitte mit elementaren operatoren lösen!
+drop table if exists a cascade;
+drop table if exists b cascade; 
+ 
+create table A (
+  x int,
+  y int,
+  z int
+);
+
+insert into a values 
+(0,1,1),
+(0,0,0),
+(1,0,0);
+
+create table B (
+  u int,
+  v int,
+  w int
+);
+
+insert into B values 
+(0,1,0),
+(0,1,1),
+(1,0,0);
+
+-- join
+select * from A join b on y = u;
+-- basisoperatoren
+select * from a,b where y = u ;
+
+select * from a,b;
+
 
 
