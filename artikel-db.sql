@@ -62,4 +62,48 @@ select * from kunde where plz = 2323;
 --v2
 select k.name, r.rnr from rechnung as r join (select * from kunde where plz = 2323) as k on r.k_id = k.id;
 
---Hausübung: Umsetzung der Query mit Basisoperatoren
+-- nochmal mit join
+
+select * from kunde, rechnung;
+
+select * from rechnung r join (SELECT id as kid, knr, name, plz FROM kunde) k 
+on k_id = kid;
+
+select * from rechnung r join kunde k 
+on r.k_id = k.id;
+
+select name, rnr from rechnung r join (SELECT id as kid, knr, name, plz FROM kunde) k 
+on k_id = kid where plz = 2323;
+
+-- Hausübung: Umsetzung der Query mit Basisoperatoren
+-- mit Basisoperatoren
+
+select name, rnr from rechnung r, kunde k where k.plz = 2323 and k.id = r.k_id ;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
