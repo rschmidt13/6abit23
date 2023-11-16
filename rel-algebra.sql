@@ -42,7 +42,27 @@ insert into S values
 (3, 2, 'BORG Braunau')
 ;
 
-select * from l;
+select l.name, s.name from l, lv, s where l.id = lv.id and s.sid = lv.sid;
+select l.name, s.name from l, (select * from s, lv where s.sid = lv.sid) as lv where l.id = lv.id;
+select l.name, lvs.name from l, (select * from s, lv where s.sid = lv.sid) as lvs where l.id = lvs.id; 
+
+select * from s, lv;
+select * from s, lv where s.sid = lv.sid;
+
+select l.name, s.sname from l natural join lv natural join (select sid, name as sname from s) as s;
+select * from l natural join lv natural join (select sid, name as sname from s);
+select * from l natural join lv natural join s;
+
+select sid from s where name = 'HTL Spenglergasse';
+select * from lv where sid = (select sid from s where name = 'HTL Spenglergasse');
+select * from lv where sid = (select sid from s where name = 'HTL Spenglergasse') and stunden > 4;
+
+select * from lv;
+select sid from s where name = 'HTL Spenglergasse' or name = 'HTL Salzburg'; 
+select * from lv where sid in (select sid from s where name = 'HTL Spenglergasse' or name = 'HTL Salzburg');
+select * from lv where sid in (select sid from s where name = 'HTL Spenglergasse' or name = 'HTL Salzburg') and stunden > 4;
+
+-- in rel. alg., als kreuzprodukt, join
 
 -- die Namen aller Lehrer die Englisch unterichten
 
