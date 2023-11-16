@@ -75,11 +75,39 @@ on r.k_id = k.id;
 select name, rnr from rechnung r join (SELECT id as kid, knr, name, plz FROM kunde) k 
 on k_id = kid where plz = 2323;
 
+select * from rechnung r join (SELECT id as kid, knr, name, plz FROM kunde) k 
+on k_id = kid; 
+
+select * from (select id as kid, knr, name, plz from kunde)
+natural join
+(select id as rid, rnr, k_id as kid, datum from rechnung);
+
 -- Hausübung: Umsetzung der Query mit Basisoperatoren
 -- mit Basisoperatoren
 
 select name, rnr from rechnung r, kunde k where k.plz = 2323 and k.id = r.k_id ;
 
+-- Natural Join
+
+drop table r;
+drop table s;
+
+create table r (
+	a char, b char, c char, d char
+);
+
+create table s (
+ 	x char, y char, b char, d char
+);
+
+insert into r values ('0','1','2','3'), ('4','1','3','2');
+insert into s values ('1','2','1','4'), ('3','4','1','3');
+
+select * from r;
+
+select * from r natural join s;
+select * from s join r on s.b = r.b and s.d = r.d;
+select r.*, s.x, s.y from s join r on s.b = r.b and s.d = r.d;
 
 
 
