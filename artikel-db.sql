@@ -30,6 +30,18 @@ create table kunde (
   plz int
 );
 
+-- K[id, knr, name, plz]
+-- K[kid, knr, kname, plz]
+
+-- R[id, rnr, k_id, datum]
+-- R[rid, rnr, kid, datum]
+
+-- A[id, name, r_id, preis, kat_id]
+-- A[aid, aname, rid, preis, katid]
+
+-- Kat[id, bez]
+-- Kat[katid, bez]
+
 select * from rechnung;
 select * from artikel;
 select * from kategorie;
@@ -42,15 +54,66 @@ delete from kunde;
 
 insert into kunde values (133, '100', 'Max', 1234);
 insert into kunde values (161, '132', 'Maja', 2323);
+insert into kunde values (171, '161', 'Mona', 4130);
 insert into rechnung values (1, '01/2020', 133, to_date('13.01.2010', 'dd.mm.yyyy'));
 insert into rechnung values (2, '08/2021', 161, '2021-06-15');
+insert into rechnung values (3, '11/2023', 171, '2023-11-14');
 insert into artikel values (1, 'headset mono 1a', 1, 15, 130);
 insert into artikel values (2, 'akg micro mono', 1, 65, 130);
 insert into artikel values (3, 'akg micro mono', 2, 68.5, 130);
 insert into artikel values (4, 'basf kasette 60min', 2, 12, 110);
+insert into artikel values (5, 'basf kasette 60min', 3, 12, 110);
 insert into kategorie values (100, 'HiFi'), (110, 'LoFi'), (120, 'Stereo'), (130, 'Mono'), (140, 'Analog'), (150, 'Digital');
 
---
+-- UE vom 21.11.2023
+-- =====
+select rnr from artikel a, rechnung r where r.id = a.r_id and a.name = 'akg micro mono';
+select rnr from artikel a join rechnung r on r.id = a.r_id  
+  where a.name = 'akg micro mono';
+
+select a.r_id from artikel a where a.name = 'akg micro mono';
+select rnr from rechnung r where r.id in (select a.r_id from artikel a where a.name = 'akg micro mono'); 
+select rnr from rechnung r where r.id = any (select a.r_id from artikel a where a.name = 'akg micro mono'); 
+select rnr from rechnung r where exists (select * from artikel a where a.name = 'akg micro mono' 
+  and r.id = a.r_id);
+ 
+-- max oder maja
+select name from rechnung r, artikel a where r.id = a.r_id and r.k_id = 133
+union
+select name from rechnung r, artikel a where r.id = a.r_id and r.k_id = 161;
+
+select distinct(name) from rechnung r, artikel a 
+  where r.id = a.r_id and r.k_id = 133 or r.id = a.r_id and r.k_id = 161; -- and r.k_id = 161;
+
+select distinct(name) from rechnung r join artikel a on r.id = a.r_id
+  where r.k_id = 133 or r.k_id = 161; 
+
+-- max nicht maja
+select name from rechnung r, artikel a where r.id = a.r_id and r.k_id = 133
+except
+select name from rechnung r, artikel a where r.id = a.r_id and r.k_id = 161;
+
+-- funktioniert nicht
+select distinct(name) from rechnung r join artikel a on r.id = a.r_id
+  where r.k_id = 133 and r.k_id != 161; 
+
+select distinct(name), r.k_id  from rechnung r join artikel a on r.id = a.r_id;
+
+-- alle kategorien, die Max gekauft hat
+select distinct(kat.bezeichnung) from kategorie kat 
+  join artikel a on kat.id = a.kat_id 
+  join rechnung r on a.r_id = r.id 
+  join kunde k on r.k_id = k.id
+  where k.name = 'Max';
+
+-- HUE vom 21.11.2023
+-- Datenbank umbauen, dass natural Join ohne Umbenennung funktioniert
+-- Dann Abfrage: "Alle kategorien, die Max gekauft hat" mit nat. Join
+-- =====
+
+ 
+ -- Alle Mono-Artikel
+
 select * from artikel, kategorie;
 select a.id, preis, bezeichnung from artikel a join kategorie k on a.kat_id = k.id where bezeichnung = 'Mono';
 
@@ -62,8 +125,7 @@ select * from kunde where plz = 2323;
 --v2
 select k.name, r.rnr from rechnung as r join (select * from kunde where plz = 2323) as k on r.k_id = k.id;
 
--- nochmal mit join
-
+-- Alle Rechnungen von Kunden aus 2323
 select * from kunde, rechnung;
 
 select * from rechnung r join (SELECT id as kid, knr, name, plz FROM kunde) k 
