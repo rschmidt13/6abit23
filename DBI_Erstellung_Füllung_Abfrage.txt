@@ -2,6 +2,7 @@
 --------------CREATE DATABASE; SCHEMA; TABLE AND REFERENCES-----------------
 --------------------------------------------------------------------------
 
+
 create database KH;
 
 create schema Krankenhaus;
@@ -39,15 +40,17 @@ Gewicht int,
 Lagerstand int
 );
 
-create table krankenhaus.Akte(
-NR_Patient int references krankenhaus.Patient(NR_SV),
-NR_KH int references krankenhaus.Krankenhaus(NR_UID),
-primary key (NR_KH, NR_Patient),
-
-LetzerBesuch Date, 
-Status int, 
-DiagnoseID int
+create table krankenhaus.Akte (
+    NR_Patient INT,
+    NR_KH INT,
+    LetzerBesuch d_Datum, -- Verwendung der Domäne
+    Status INT,
+    DiagnoseID INT,
+    PRIMARY KEY (NR_KH, NR_Patient),
+    FOREIGN KEY (NR_Patient) REFERENCES krankenhaus.Patient(NR_SV),
+    FOREIGN KEY (NR_KH) REFERENCES krankenhaus.Krankenhaus(NR_UID)
 );
+
 
 create table krankenhaus.Verschreibung(
 NR_Patient int references krankenhaus.Patient(NR_SV),
@@ -140,19 +143,24 @@ INSERT INTO krankenhaus.Patient (NR_SV, VollName) VALUES
 (1003, 'Peter Müller'),
 (1004, 'Laura Fischer');
 
+INSERT INTO krankenhaus.Patient ( VollName) values ('Max Fischer');
+
 -- Medikamente
 INSERT INTO krankenhaus.Medikament (EAN, ProduktName, Gewicht, Lagerstand) VALUES
 (10001, 'Paracetamol', 100, 50),
 (10002, 'Ibuprofen', 75, 30),
 (10003, 'Amoxicillin', 200, 100),
-(10004, 'Aspirin', 50, 20);
+(10004, 'Aspirin', 50, 20),
+(10005, 'Tee', 1, 15);
 
 -- Akten
 INSERT INTO krankenhaus.Akte (NR_Patient, NR_KH, LetzerBesuch, Status, DiagnoseID) VALUES
-(1001, 1, '2023-05-20', 1, 12345),
-(1002, 2, '2023-05-22', 2, 54321),
-(1003, 1, '2023-05-25', 1, 98765),
-(1004, 3, '2023-05-28', 3, 24680);
+(1001, 1, '2023-01-10', 1, 12345),
+(1002, 2, '2023-02-15', 2, 54321),
+(1003, 1, '2022-12-20', 1, 98765),
+(1004, 3, '2023-03-05', 3, 24680);
+--(1005, 3, '199-03-05', 3, 24680);
+
 
 -- Verschreibungen
 INSERT INTO krankenhaus.Verschreibung (NR_Patient, NR_Personal, NR_Medikament, Datum, Anzahl, Grund) VALUES
@@ -216,46 +224,87 @@ GROUP BY k.KH_Name;
 
 
 
-1. Kreuzprodukt
+--1. Kreuzprodukt
 
 SELECT *
 FROM krankenhaus.Patient, krankenhaus.Medikament;
 
-2. Theta-Join
+
+select krankenhaus.patient.vollname , grund, krankenhaus.medikament.produktname  
+from krankenhaus.patient , krankenhaus.verschreibung, krankenhaus.medikament 
+where patient.nr_sv = krankenhaus.verschreibung.nr_patient and krankenhaus.verschreibung.nr_medikament = krankenhaus.medikament.ean ; 
+
 
 SELECT p.VollName, a.LetzerBesuch
 FROM krankenhaus.Patient p, krankenhaus.Akte a
 WHERE p.NR_SV = a.NR_Patient AND a.Status = 1;
 
-3. Natürlicher Verbund (Natural Join)
+--2. Theta-Join
 
-SELECT *
+
+SELECT p.VollName, a.LetzerBesuch, m.ProduktName
+FROM krankenhaus.Patient p
+JOIN krankenhaus.Akte a ON p.NR_SV = a.NR_Patient
+JOIN krankenhaus.Verschreibung v ON p.NR_SV = v.NR_Patient
+JOIN krankenhaus.Medikament m ON v.NR_Medikament = m.EAN
+WHERE a.Status = 1 AND m.Gewicht > 100;
+
+
+--3. Natürlicher Verbund (Natural Join)
+
+SELECT git*
 FROM krankenhaus.Patient NATURAL JOIN krankenhaus.Akte;
 
-4. Unterabfrage (Sub-Select)
+SELECT p.VollName, k.KH_Name, a.LetzerBesuch
+FROM krankenhaus.Patient p
+NATURAL JOIN krankenhaus.Akte a
+JOIN krankenhaus.Krankenhaus k ON a.NR_KH = k.NR_UID
+WHERE a.Status = 1;
+
+--4. Unterabfrage (Sub-Select)
 
 SELECT VollName
 FROM krankenhaus.Patient
 WHERE NR_SV IN (SELECT NR_Patient FROM krankenhaus.Akte WHERE Status = 1);
 
-5. Mengenvereinigung
+SELECT p.VollName, a.LetzerBesuch
+FROM krankenhaus.Patient p
+JOIN krankenhaus.Akte a ON p.NR_SV = a.NR_Patient
+WHERE a.DiagnoseID IN (SELECT DiagnoseID FROM krankenhaus.Akte WHERE LetzerBesuch > '2023-01-01');
+
+
+--5. Mengenvereinigung
 
 SELECT NR_PNR FROM krankenhaus.Arzt
 UNION
 SELECT NR_PNR FROM krankenhaus.Schwester;
 
+(SELECT VollName FROM krankenhaus.Patient)
+UNION
+(SELECT KH_Name FROM krankenhaus.Krankenhaus);
 
-6. Mengendifferenz
+
+--6. Mengendifferenz
 
 SELECT NR_PNR FROM krankenhaus.Personal
 EXCEPT
 SELECT NR_PNR FROM krankenhaus.Arzt;
 
-Sequenzen
+(SELECT NR_PNR FROM krankenhaus.Personal)
+EXCEPT
+(SELECT NR_PNR FROM krankenhaus.Arzt UNION SELECT NR_PNR FROM krankenhaus.Schwester);
 
-CREATE SEQUENCE patient_seq START WITH 1 INCREMENT BY 1;
 
-Views
+
+--Sequenzen
+
+CREATE SEQUENCE patient_seq START WITH 1005 INCREMENT BY 1;
+
+alter table krankenhaus.patient 
+alter column nr_sv set default nextval('patient_seq'); 
+
+
+--Views
 
 CREATE VIEW v_MedikamentenStatus AS
 SELECT ProduktName, Lagerstand
@@ -263,6 +312,11 @@ FROM krankenhaus.Medikament
 WHERE Lagerstand < 20;
 
 
-Domänen
+--Domänen
 
-CREATE DOMAIN d_Name AS VARCHAR(100) CHECK (VALUE <> '');
+CREATE DOMAIN d_Datum AS DATE
+CHECK (VALUE >= '2000-01-01');
+
+select * from v_MedikamentenStatus;
+
+select * from krankenhaus.patient p 
