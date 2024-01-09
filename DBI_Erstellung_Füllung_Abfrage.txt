@@ -1,0 +1,268 @@
+---------------------------------------------------------------------------
+--------------CREATE DATABASE; SCHEMA; TABLE AND REFERENCES-----------------
+--------------------------------------------------------------------------
+
+create database KH;
+
+create schema Krankenhaus;
+
+create table krankenhaus.Krankenhaus (
+NR_UID INT primary Key, 
+KH_Name Varchar(100), 
+Adresse Varchar(100)
+);
+
+create table krankenhaus.Abteilung (
+Code_Abteilung INT primary Key, 
+AB_Name Varchar(100)
+);
+
+create table krankenhaus.Personal (
+NR_PNR INT primary Key, 
+VollName Varchar(100), 
+Abteilung int,
+Rolle int
+);
+
+
+
+
+create table krankenhaus.Patient (
+NR_SV INT primary Key, 
+VollName Varchar(100)
+);
+
+create table krankenhaus.Medikament (
+EAN INT primary Key, 
+ProduktName Varchar(100), 
+Gewicht int, 
+Lagerstand int
+);
+
+create table krankenhaus.Akte(
+NR_Patient int references krankenhaus.Patient(NR_SV),
+NR_KH int references krankenhaus.Krankenhaus(NR_UID),
+primary key (NR_KH, NR_Patient),
+
+LetzerBesuch Date, 
+Status int, 
+DiagnoseID int
+);
+
+create table krankenhaus.Verschreibung(
+NR_Patient int references krankenhaus.Patient(NR_SV),
+NR_Personal int references krankenhaus.Personal(NR_PNR),
+NR_Medikament int references krankenhaus.Medikament(EAN),
+primary key (NR_Personal, NR_Patient, NR_Medikament),
+
+Datum Date, 
+Anzahl int, 
+Grund Varchar(100)
+);
+
+
+
+
+
+alter table krankenhaus.Abteilung
+add KH_NR int;
+
+
+alter table krankenhaus.Personal
+add constraint abteilung FOREIGN KEY (Abteilung) 
+REFERENCES krankenhaus.Abteilung(code_abteilung);
+
+
+alter table krankenhaus.Abteilung
+add constraint KH FOREIGN KEY (KH_NR) 
+REFERENCES krankenhaus.Krankenhaus(NR_UID);
+
+alter table krankenhaus.Abteilung 
+add column code_UEberAbteilung int references krankenhaus.Abteilung(code_Abteilung);
+
+
+
+
+CREATE TABLE krankenhaus.Arzt (
+    NR_PNR INT PRIMARY KEY,
+    Fachgebiet Varchar(100),
+    FOREIGN KEY (NR_PNR) REFERENCES krankenhaus.Personal(NR_PNR)
+);
+
+CREATE TABLE krankenhaus.Schwester (
+    NR_PNR INT PRIMARY KEY,
+    ZuBetreuendePatienten INT,
+    FOREIGN KEY (NR_PNR) REFERENCES krankenhaus.Personal(NR_PNR)
+);
+
+
+
+CREATE TABLE krankenhaus.Zuweisung(
+    ZuweisungsID INT PRIMARY KEY,
+    PatientNR INT REFERENCES krankenhaus.Patient(NR_SV),
+    SchwesterNR INT REFERENCES krankenhaus.Schwester(NR_PNR),
+    BetreuungAB date, 
+    BetreuungBIS date
+);
+
+
+
+---------------------------------------------------------------------------
+--------------------------INSERT VALUES INTO TABLES------------------------
+--------------------------------------------------------------------------
+
+-- Krankenhäuser
+INSERT INTO krankenhaus.Krankenhaus (NR_UID, KH_Name, Adresse) VALUES
+(1, 'St. Marien Krankenhaus', 'Musterstraße 1, 12345 Musterstadt'),
+(2, 'Universitätsklinikum Musterstadt', 'Hauptstraße 10, 54321 Musterstadt'),
+(3, 'Klinikum am See', 'Seestraße 5, 67890 Musterstadt');
+
+-- Abteilungen
+INSERT INTO krankenhaus.Abteilung (Code_Abteilung, AB_Name, KH_NR) VALUES
+(1, 'Innere Medizin', 1),
+(2, 'Chirurgie', 1),
+(3, 'Gynäkologie', 2),
+(4, 'Orthopädie', 2),
+(5, 'Pädiatrie', 3);
+
+-- Personal
+INSERT INTO krankenhaus.Personal (NR_PNR, VollName, Abteilung, Rolle) VALUES
+(1, 'Dr. Max Mustermann', 1, 1),
+(2, 'Dr. Maria Müller', 2, 1),
+(3, 'Schwester Anna Schmidt', 4, 2),
+(4, 'Dr. Sarah Weber', 3, 1),
+(5, 'Schwester Lisa Wagner', 5, 2);
+
+-- Patienten
+INSERT INTO krankenhaus.Patient (NR_SV, VollName) VALUES
+(1001, 'Hans Meier'),
+(1002, 'Sabine Schmidt'),
+(1003, 'Peter Müller'),
+(1004, 'Laura Fischer');
+
+-- Medikamente
+INSERT INTO krankenhaus.Medikament (EAN, ProduktName, Gewicht, Lagerstand) VALUES
+(10001, 'Paracetamol', 100, 50),
+(10002, 'Ibuprofen', 75, 30),
+(10003, 'Amoxicillin', 200, 100),
+(10004, 'Aspirin', 50, 20);
+
+-- Akten
+INSERT INTO krankenhaus.Akte (NR_Patient, NR_KH, LetzerBesuch, Status, DiagnoseID) VALUES
+(1001, 1, '2023-05-20', 1, 12345),
+(1002, 2, '2023-05-22', 2, 54321),
+(1003, 1, '2023-05-25', 1, 98765),
+(1004, 3, '2023-05-28', 3, 24680);
+
+-- Verschreibungen
+INSERT INTO krankenhaus.Verschreibung (NR_Patient, NR_Personal, NR_Medikament, Datum, Anzahl, Grund) VALUES
+(1001, 1, 10001, '2023-05-21', 2, 'Schmerzlinderung'),
+(1002, 2, 10002, '2023-05-23', 1, 'Entzündungshemmung'),
+(1003, 4, 10003, '2023-05-26', 3, 'Antibiotikatherapie'),
+(1004, 5, 10004, '2023-05-29', 1, 'Kopfschmerzen');
+
+-- Ärzte
+INSERT INTO krankenhaus.Arzt (NR_PNR, Fachgebiet) VALUES
+(1, 'Kardiologie'),
+(2, 'Allgemeinmedizin'),
+(4, 'Gynäkologie');
+
+-- Schwestern
+INSERT INTO krankenhaus.Schwester (NR_PNR, ZuBetreuendePatienten) VALUES
+(3, 5),
+(5, 4);
+
+-- Zuweisungen
+INSERT INTO krankenhaus.Zuweisung (ZuweisungsID, PatientNR, SchwesterNR, BetreuungAB, BetreuungBIS) VALUES
+(1, 1001, 3, '2023-05-20', '2023-05-25'),
+(2, 1002, 5, '2023-05-22', '2023-05-30'),
+(3, 1003, 5, '2023-05-25', '2023-06-02'),
+(4, 1004, 3, '2023-05-28', '2023-06-04');
+
+
+
+---------------------------------------------------------------------------
+--------------------------ABFRAGEN / SELECT ------------------------
+--------------------------------------------------------------------------
+
+--Liste der Patienten und Krankenhäusern
+
+SELECT p.VollName AS Patient, k.KH_Name AS Krankenhaus
+FROM krankenhaus.Patient p
+JOIN krankenhaus.Akte a ON p.NR_SV = a.NR_Patient
+JOIN krankenhaus.Krankenhaus k ON a.NR_KH = k.NR_UID;
+
+
+--Liste der Medikamente und Gesamt anzahl im Lager
+
+SELECT ProduktName, SUM(Lagerstand) AS Gesamtanzahl
+FROM krankenhaus.Medikament
+GROUP BY ProduktName;
+
+
+--Liste von Patienten und Diagnose
+
+SELECT p.VollName AS Patient, a.DiagnoseID
+FROM krankenhaus.Patient p
+JOIN krankenhaus.Akte a ON p.NR_SV = a.NR_Patient;
+
+
+-- Abfrage Krankenhäuser und Mitarbeiter
+
+SELECT k.KH_Name AS Krankenhaus, COUNT(p.NR_PNR) AS Mitarbeiteranzahl
+FROM krankenhaus.Krankenhaus k
+JOIN krankenhaus.Personal p ON k.NR_UID = p.Abteilung
+GROUP BY k.KH_Name;
+
+
+
+1. Kreuzprodukt
+
+SELECT *
+FROM krankenhaus.Patient, krankenhaus.Medikament;
+
+2. Theta-Join
+
+SELECT p.VollName, a.LetzerBesuch
+FROM krankenhaus.Patient p, krankenhaus.Akte a
+WHERE p.NR_SV = a.NR_Patient AND a.Status = 1;
+
+3. Natürlicher Verbund (Natural Join)
+
+SELECT *
+FROM krankenhaus.Patient NATURAL JOIN krankenhaus.Akte;
+
+4. Unterabfrage (Sub-Select)
+
+SELECT VollName
+FROM krankenhaus.Patient
+WHERE NR_SV IN (SELECT NR_Patient FROM krankenhaus.Akte WHERE Status = 1);
+
+5. Mengenvereinigung
+
+SELECT NR_PNR FROM krankenhaus.Arzt
+UNION
+SELECT NR_PNR FROM krankenhaus.Schwester;
+
+
+6. Mengendifferenz
+
+SELECT NR_PNR FROM krankenhaus.Personal
+EXCEPT
+SELECT NR_PNR FROM krankenhaus.Arzt;
+
+Sequenzen
+
+CREATE SEQUENCE patient_seq START WITH 1 INCREMENT BY 1;
+
+Views
+
+CREATE VIEW v_MedikamentenStatus AS
+SELECT ProduktName, Lagerstand
+FROM krankenhaus.Medikament
+WHERE Lagerstand < 20;
+
+
+Domänen
+
+CREATE DOMAIN d_Name AS VARCHAR(100) CHECK (VALUE <> '');
