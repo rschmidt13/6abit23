@@ -124,3 +124,13 @@ select * from k_abt_natural;
 
 select * from schuler_mit_klasse smk join k_abt kabt on smk.name = kabt.kuerzel;
 select * from schuler_mit_klasse natural join k_abt_natural;
+
+select * from k_abt;
+select * from klasse;
+select * from schueler_klasse;
+
+select * from (
+  (select kuerzel as name, abteilung from k_abt)
+  natural join 
+  klasse
+);
