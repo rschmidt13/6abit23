@@ -30,6 +30,7 @@ create table kunde (
   plz int
 );
 
+<<<<<<< Updated upstream
 -- K[id, knr, name, plz]
 -- K[kid, knr, kname, plz]
 
@@ -42,6 +43,93 @@ create table kunde (
 -- Kat[id, bez]
 -- Kat[katid, bez]
 
+=======
+----------UEBEN----------fuer test-------------------------------------------------------------------------------------------------------------------
+-------------------------SCHEMA----------------------------------------------------------------------------------------------------------------------
+
+--bsp2 laut mitschrift
+--Alle Rechnungen in dem der Artikel 'akg-m..' vorkommt
+
+--K[id, knr, name, plz]
+--R[id, rnr, k_id, datum]
+--A[(a)id umbennenen, (a)name, r_id, preis, kat_id]
+--Kat[(kat)id, bez]
+
+---select zu basisoperatorvariante v1)
+
+select rnr from artikel a, rechnung r where r.id = a.r_id and a.name = 'akg micro mono';
+select rnr from artikel a join rechnung r on r.id = a.r_id where a.name = 'akg micro mono';
+
+
+--bsp 3 UNION-Menge
+--Alle Artikelnamen die Max oder Maya gekauft haben
+
+select name from rechnung r, artikel a where r.id = a.r_id and r.k_id = 133
+union 
+select name from rechnung r, artikel a where r.id = a.rid and r.k_id = 161;
+
+--2variante fuer union
+
+select distinct(name) from rechnung r, artikel a
+where r.id = a.r_id and r.k_id = 133 or r.id = a.r_id and r.k_id = 161; 
+
+--Bsp4 MengenDifferenz Maxa nicht maja
+--Alle Artikelnamen , die Max aber nicht Maja gekauft haben
+
+select name from rechnung r, artikel a where r.id = a.r_id and r.k_id = 133
+except
+select name from rechnung r, artikel a where r.id = a.r_id and r.k_id = 161;
+
+--2 variante
+select distinct(name) from rechnung r join artikel a on r.id = a.r_id
+where r.k_id = 133 and r.k_id != 161;
+
+
+--Bsp5 Mengendifferenz = intersect
+--haben wir nicht gemacht
+
+--Bsp 6 Ein Beispiel mit join mit 3 Tabellen
+--Wo man über alle 3 Tabellen durchmuss
+
+--siehe mitschrift
+
+
+--Bsp 7 mit natural join
+--Alles umbenenen , dass FK und PK gleich heissen
+--Und alles umbennen , dass andere Attribute unterschiedlich heissen
+
+--siehe mitschrift
+--K[id, knr, name, plz]
+--K[kid, knr, kname, plz]
+
+--R[id, rnr, k_id, datum]
+--R[rid, rnr, k_id, datum]
+
+--A[id, name, r_id, preis, kat_id]
+--A[aid, aname,rid, preis, katid]
+
+--Kat[id, bez]
+--Kat[(kat)id, bez]
+
+--relationale Algebra lösung siehe mitschrift
+--------------------------------------------------------------------------------------------------------------------------
+--V2 = HUE
+--HUE--Datenbank so umbauen dass die gleiche abfrage wie in v1 ) Alle kategorien die Max gekaugt hat mit
+--natural join funktionieren 
+--------------------------------------------------------------------------------------------------------------------------
+--eine select loesung mit thether join  v1
+
+--alle kategorien, die Max gekauft hat
+select kat.bezeichnung from kategorie kat
+join artikel a on kat.id = a.kat_id
+join rechnung r on a.r_id = r.id
+join kunde k on r.k_id = k.id
+where k.name = 'Max';
+
+
+-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------
+>>>>>>> Stashed changes
 select * from rechnung;
 select * from artikel;
 select * from kategorie;
