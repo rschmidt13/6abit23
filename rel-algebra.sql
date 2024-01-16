@@ -182,4 +182,43 @@ select * from Kunde k join Kundensegment ks on k.alter = ks.alter;
 select k.name, k.alter ka, kso.alter ksoa, kso.typ kso_typ, ksu.alter ksua, ksu.typ ksu_typ from Kunde k, Kundensegment kso, Kundensegment ksu 
 where k.name = 'Gerti';--- and k.alter >= kso.alter and < ksu.alter; -- and ks.alter <= 99 and alter >= 25;
 
+-- outer join
+
+select * from L;
+select * from S;
+select * from LV;
+
+insert into LV values (null, 'M', 2, 2024, 1);
+
+-- Lehrer ⋈ LV
+select * from L natural join LV;
+-- semi Join L ⋉ LV
+select distinct(L.*) from L natural join LV;
+-- semi Join  LV ⋊ L
+select distinct(LV.*) from L natural join LV;
+-- anti Join L ▷ LV
+select * from l 
+except
+(select distinct(L.*) from L natural join LV);
+-- left outer join L ⟕ LV
+select * from L natural left outer join LV;
+select * from L left outer join lv on l.id = lv.id;
+select * from L left join lv on l.id = lv.id;
+-- right outer join L ⟖ LV
+select * from L natural right outer join LV;
+-- full outer join L ⟗ LV
+select * from L natural full join LV;
+select name, fach, stunden, jahr from L full join LV on l.id = lv.id;
+
+select name, fach, stunden, jahr from L right join LV on l.id = lv.id;
+
+select name, fach, stunden, jahr from L right join LV on l.id = lv.id where lv.fach = 'E'; 
+
+select name, fach, stunden, jahr from L inner join LV on l.id = lv.id and lv.fach = 'E'; 
+
+select name, fach, stunden, jahr from L right join LV on l.id = lv.id and lv.fach = 'E';
+
+select name, fach, stunden, jahr from L left join LV on l.id = lv.id and lv.fach = 'E';
+---
+
 
