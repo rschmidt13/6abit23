@@ -1,12 +1,11 @@
-drop table if exists rechnung;
-drop table if exists artikel;
-drop table if exists kategorie;
-drop table if exists kunde;
+drop table if exists rechnung cascade;
+drop table if exists artikel cascade;
+drop table if exists kategorie cascade;
+drop table if exists kunde cascade;
  
 --natural join beispiel
  
 --
-
 create table kunde (
   k_id int primary key,
   knr varchar,
@@ -30,7 +29,8 @@ create table artikel (
 );
  
 create table kategorie (
-  kat_id int primary key,
+  --kat_id int primary key,
+  id int primary key,  
   bezeichnung varchar
 );
 
@@ -46,3 +46,26 @@ insert into kategorie values (100, 'HiFi'), (110, 'LoFi'), (120, 'Stereo'), (130
 
 select * from artikel natural join rechnung;
 select aname from artikel natural join rechnung where rnr = '01/2020';
+
+with Max as
+(select k_id, kname from kunde where kname = 'Max'),
+RMax as 
+(select * from rechnung r join Max m on r.k_id = m.k_id),
+AMax as 
+(select * from artikel natural join RMax)
+select
+	cast (
+	case 
+    when kname = 'Max' then 1
+    else 0
+	end
+	as bool )
+	, aname from AMax natural right join artikel;
+--select * from AMax natural right join artikel;
+
+select * from artikel natural right join rechnung;
+select * from AMax;
+
+
+
+select * from Artikel natural join rechnung natural join (select * from Kunde where kname = 'Max');
