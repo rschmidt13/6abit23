@@ -69,3 +69,30 @@ select * from Artikel natural join rechnung natural join (select * from Kunde wh
 
 -- weitere übungsaufgabe, alle produktname und kategorien die sowohl max als auch maja gekauft haben.
 -- rel. algebra im teams chat
+
+select aname, case WHEN preis > 40.25 THEN 'teuer' ELSE 'billig' end as preisklasse from artikel;
+select max(preis) from artikel;
+select preis, preis * 2 doppelpreis, aname from artikel;
+select aname, sum(preis) from artikel;
+select sum(preis), avg(preis)  from artikel;
+select aname from artikel where preis < 40.25;
+select * from artikel where preis < all (select avg(preis) from artikel);
+
+-- durchschnittspreis aller hifi produkte
+select * from kategorie k ;
+select * from artikel;
+insert into artikel values (5, 'hifi 1', null, 110, 100);
+insert into artikel values (6, 'hifi 2', null, 210, 100);
+
+select * from kategorie k ;
+select * from artikel;
+select avg(preis) from artikel a join kategorie k on k.id = a.kat_id where k.bezeichnung = 'HiFi'; 
+
+select * from artikel a join kategorie k on k.id = a.kat_id;
+
+-- kategoriebezeichnung, anzahl und durschnittspreis der artikel pro kategorie (bezeichnung)
+select bezeichnung, avg(preis), count(*) from artikel a join kategorie k on k.id = a.kat_id group by k.bezeichnung;
+select bezeichnung, avg(preis), count(r_id) anz_rechnungen, count(*) anz_artikel from artikel a join kategorie k on k.id = a.kat_id group by k.bezeichnung;
+
+-- Frage für nächste LV: Alle Lehrer, die noch keine Noten vergeben haben, Lehrer die die schlechtesten Beurteilungen geben
+-- auch: stash rückgängig machen
