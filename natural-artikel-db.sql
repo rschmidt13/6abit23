@@ -65,7 +65,6 @@ select
 
 select * from artikel natural right join rechnung;
 select * from AMax;
-
-
-
 select * from Artikel natural join rechnung natural join (select * from Kunde where kname = 'Max');
+
+-- weitere übungsaufgabe, alle produkte die sowohl max als auch maja gekauft haben.
