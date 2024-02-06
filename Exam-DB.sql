@@ -74,7 +74,20 @@ insert into stamps values (now());
 insert into stamps values (now() + '1 D'::interval);
 
 select * from stamps;
+select extract(dow from stamp) from stamps;
 select to_char(stamp, 'dd.mm.yyyy') from stamps;
+select * from to_date('06.02.2024', 'dd.mm.yyyy');
 
+SELECT to_char(stamp, 'dd.mm.yyyy'), 
+CASE
+    WHEN extract(dow from stamp) = 1 THEN 'Montag'
+    WHEN extract(dow from stamp) = 2 THEN 'Dienstag'
+    WHEN extract(dow from stamp) = 3 THEN 'Mittwoch'
+    WHEN extract(dow from stamp) = 4 THEN 'Donnerstag'
+    WHEN extract(dow from stamp) = 5 THEN 'Freitag'
+    WHEN extract(dow from stamp) = 6 THEN 'Samstag'
+    ELSE 'Sonstag'
+END
+FROM stamps; 
 
 
