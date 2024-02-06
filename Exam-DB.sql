@@ -90,4 +90,7 @@ CASE
 END
 FROM stamps; 
 
+select * from teacher;
+-- Aufgabe: An welchen Wochentagen wurden die Lehrer geboren?
+
 
