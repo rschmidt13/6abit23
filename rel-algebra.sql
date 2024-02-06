@@ -200,10 +200,15 @@ select distinct(LV.*) from L natural join LV;
 select * from l 
 except
 (select distinct(L.*) from L natural join LV);
+
+select id, name, alter, pendler from L natural left outer join LV where fach is null;
+
 -- left outer join L ⟕ LV
 select * from L natural left outer join LV;
 select * from L left outer join lv on l.id = lv.id;
 select * from L left join lv on l.id = lv.id;
+-- alternativ zum anti-join
+select id, name, alter from L natural left outer join LV where fach is null;
 -- right outer join L ⟖ LV
 select * from L natural right outer join LV;
 -- full outer join L ⟗ LV
@@ -220,5 +225,7 @@ select name, fach, stunden, jahr from L right join LV on l.id = lv.id and lv.fac
 
 select name, fach, stunden, jahr from L left join LV on l.id = lv.id and lv.fach = 'E';
 ---
+
+
 
 

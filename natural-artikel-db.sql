@@ -47,21 +47,29 @@ insert into kategorie values (100, 'HiFi'), (110, 'LoFi'), (120, 'Stereo'), (130
 select * from artikel natural join rechnung;
 select aname from artikel natural join rechnung where rnr = '01/2020';
 
+-- With as - Zusatzaufgabe, ohne doppelte Artikellnamen
 with Max as
 (select k_id, kname from kunde where kname = 'Max'),
 RMax as 
 (select * from rechnung r join Max m on r.k_id = m.k_id),
 AMax as 
-(select * from artikel natural join RMax)
-select
+(select * from artikel natural join RMax),
+ABMax as
+(select
+	a_id,
 	cast (
 	case 
     when kname = 'Max' then 1
     else 0
 	end
-	as bool )
-	, aname from AMax natural right join artikel;
---select * from AMax natural right join artikel;
+	as bool ) as bought
+	, aname from AMax natural right join artikel),
+ABCMax as
+(select A.a_id, A.bought, A.aname from ABMax A, ABMax B where 
+  A.aname = B.aname and A.a_id > B.a_id and A.bought = false or 
+  A.aname = B.aname and A.a_id < B.a_id and B.bought = true)
+select * from ABmax except select * from ABCMax;
+
 
 select * from artikel natural right join rechnung;
 select * from AMax;
@@ -70,12 +78,14 @@ select * from Artikel natural join rechnung natural join (select * from Kunde wh
 -- weitere übungsaufgabe, alle produktname und kategorien die sowohl max als auch maja gekauft haben.
 -- rel. algebra im teams chat
 
+-- aggregation
 select aname, case WHEN preis > 40.25 THEN 'teuer' ELSE 'billig' end as preisklasse from artikel;
 select max(preis) from artikel;
 select preis, preis * 2 doppelpreis, aname from artikel;
 select aname, sum(preis) from artikel;
 select sum(preis), avg(preis)  from artikel;
 select aname from artikel where preis < 40.25;
+-- artikel und aggregation in der where condition mit subselect gelöst
 select * from artikel where preis < all (select avg(preis) from artikel);
 
 -- durchschnittspreis aller hifi produkte
@@ -95,4 +105,3 @@ select bezeichnung, avg(preis), count(*) from artikel a join kategorie k on k.id
 select bezeichnung, avg(preis), count(r_id) anz_rechnungen, count(*) anz_artikel from artikel a join kategorie k on k.id = a.kat_id group by k.bezeichnung;
 
 -- Frage für nächste LV: Alle Lehrer, die noch keine Noten vergeben haben, Lehrer die die schlechtesten Beurteilungen geben
--- auch: stash rückgängig machen
