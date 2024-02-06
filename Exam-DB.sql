@@ -90,7 +90,28 @@ CASE
 END
 FROM stamps; 
 
+--update exam set grade = null where student = 'grs005' and teacher = 'b002';
+update exam set grade = -1 where teacher = 'b002';
 select * from teacher;
+select * from exam;
 -- Aufgabe: An welchen Wochentagen wurden die Lehrer geboren?
+
+-- Frage für nächste LV: 
+-- Die Namen aller Lehrer, die noch keine Noten vergeben haben, 
+select distinct(teacher) from exam
+except
+select distinct(teacher) from exam where grade > 0;
+
+-- Lehrer (Nachname) die die schlechtesten Beurteilungen geben
+select * from teacher, exam where account = teacher;
+select teacher, avg(grade) from teacher, exam where account = teacher and grade > 0 group by teacher;
+select teacher, avg(grade) from teacher, exam where account = teacher and grade > 0 group by teacher;
+select lastname, teacher, avg(grade) from teacher, exam where account = teacher and grade > 0 group by teacher, lastname;
+-- !!
+select lastname, firstname, avg(grade) from teacher, exam where account = teacher and grade > 0 group by account;
+select * from exam;
+select course, count(*) from exam group by teacher;
+
+
 
 
