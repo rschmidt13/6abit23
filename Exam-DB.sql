@@ -51,3 +51,30 @@ values
 ('grs005', 'b003', 'English','2021', 4),
 ('grs005', 'a001', 'Biology','2021', -1),
 ('grs005', 'b002', 'Math','2021', -1);
+
+-- Geben Sie die Anzahl der, in der Datenbank gewarteten, Lehrer aus.
+-- Gcount(*) (teacher)
+select count(*) from teacher;
+
+-- Anzahl der verschiedenen Vornamen von Schülern 
+select count(distinct firstname) from student;
+select * from student;
+Insert into student (account, lastname, firstname, mnumber, email, telephone)
+values ('beg003', 'Huber', 'Franz', 'a2008', 'beg003@mail.at', '06641244');
+
+select * from extract (dow from (now()));
+select * from extract (dow from (now() - '1 D'::interval));
+
+create table stamps (
+  stamp timestamp
+); 
+
+insert into stamps values (now() - '1 D'::interval);
+insert into stamps values (now());
+insert into stamps values (now() + '1 D'::interval);
+
+select * from stamps;
+select to_char(stamp, 'dd.mm.yyyy') from stamps;
+
+
+
