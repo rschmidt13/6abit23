@@ -90,6 +90,15 @@ CASE
 END
 FROM stamps; 
 
+create table intervals (
+	jahre interval,
+	datum date
+);
+
+insert into intervals values ('2 years'::interval, '2024-01-31');
+select *, (jahre + datum)::date as sum from intervals;
+select *, extract(year from jahre + datum) as sum from intervals;
+
 --update exam set grade = null where student = 'grs005' and teacher = 'b002';
 update exam set grade = -1 where teacher = 'b002';
 select * from teacher;
@@ -111,6 +120,57 @@ select lastname, teacher, avg(grade) from teacher, exam where account = teacher 
 select lastname, firstname, avg(grade) from teacher, exam where account = teacher and grade > 0 group by account;
 select * from exam;
 select course, count(*) from exam group by teacher;
+
+select * from exam e join teacher t on e.teacher = t.account ;
+select t.lastname, avg(grade) from exam e join teacher t on e.teacher = t.account where grade > 0 group by t.lastname;
+
+
+
+
+select * from exam;
+--insert into exam values ('');
+update exam set grade = 5 where grade = -1;
+
+ select teacher, course, count(*) from exam group by teacher; 
+select teacher, course, count(*) from exam group by teacher, course;
+select teacher, course, count(*) from exam group by teacher, course having count(*) >= 3;
+
+select * from exam e join teacher t on e.teacher = t.account where grade > 0;
+select t.lastname, avg(grade) from exam e join teacher t on e.teacher = t.account where grade > 0 
+  group by t.lastname; --having(max(case when course = 'Biology' THEN 1 ELSE 0 end) = 0);
+ 
+ select t.lastname, avg(grade) from exam e join teacher t on e.teacher = t.account where grade > 0 
+  group by t.lastname having(sum(case when student = 'bah12' THEN 1 ELSE 0 end) > 0);
+ 
+ 
+select * from exam;
+select count(grade) from exam where grade > 0;
+select count(distinct(grade)) from exam order by grade;
+select grade, count(grade) from exam where grade > 0 group by grade having count(*) = 1;
+
+
+
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
 
 
 

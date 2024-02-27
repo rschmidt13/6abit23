@@ -104,4 +104,59 @@ select * from artikel a join kategorie k on k.id = a.kat_id;
 select bezeichnung, avg(preis), count(*) from artikel a join kategorie k on k.id = a.kat_id group by k.bezeichnung;
 select bezeichnung, avg(preis), count(r_id) anz_rechnungen, count(*) anz_artikel from artikel a join kategorie k on k.id = a.kat_id group by k.bezeichnung;
 
--- Frage für nächste LV: Alle Lehrer, die noch keine Noten vergeben haben, Lehrer die die schlechtesten Beurteilungen geben
+select * from kunde;
+select * from rechnung;
+select * from artikel;
+select * from kategorie;
+
+select count(*) from kunde;
+
+--Anz. der Artikel pro RNr
+--select r_id from rechnung;
+select count(id) from artikel;
+select r_id, count(id), sum(preis) from artikel group by r_id;
+
+--Anz. der Artikel pro Kundenname
+select * from artikel a join rechnung r on a.r_id = r.id 
+join kunde k on r.k_id = k.id;
+
+select k.name, count(a.id), sum(a.preis) from artikel a join rechnung r on a.r_id = r.id join kunde k on r.k_id = k.id group by k.name;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
