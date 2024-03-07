@@ -26,13 +26,102 @@ insert into actor values (3, 'Frances', 'McDormand', now() - INTERVAL '300 DAY')
 
 do 
 $$
-<<first_block>>
+--<<first_block>>
 declare
    film_count integer := 0;
-   
+   now_ timestamp = now();
+   user_ text = 'SMIR';
 begin 
    select count(*) into film_count
    from film;
-   raise notice 'The number of films: %', film_count;
-end first_block;
+   raise notice 'The number of films: % scanned at: % from user: %', film_count, now_, user_;
+end ---first_block;
 $$
+
+
+create or replace function film_name(in id__ int)
+  returns varchar 
+  language plpgsql
+as
+--do 
+$$
+declare
+  title_ film.title%type;
+--  id_ int = 2;
+begin 
+  select title from film where film_id = id__ into title_;
+  raise notice 'The title of film % is: %', id__, title_;
+  --return 'Film with ' || id__ || ' has title ' || title_;
+  return title_;
+end;
+$$
+
+select film_name(1);
+
+-- my_add(a int, b int)
+--> a + b
+
+
+create or replace function add_percent(price int, percentage int)
+  returns decimal 
+  language plpgsql
+as
+--do 
+$$
+declare
+  priced decimal;
+begin 
+  priced = price;
+  return priced + priced/100*percentage;
+end;
+$$
+
+select add_percent(film_id, 20) from film;
+select add_percent(film_id, 19) from film;
+
+-- Todo
+-- Die Namen aller Filme ausgeben
+select film_name(film_id) from film;
+
+-- Ganze Tabelle als Parameter übergeben
+
+
+create or replace function ltitle(in id__ int)
+  returns varchar 
+  language plpgsql
+as
+--do 
+$$
+declare
+  --film_ film%ROWTYPE;
+  film_ record;
+begin 
+  --select * from film where film_id = id__ into film_;
+  select * from film into film_ where film_id = id__;
+  raise notice 'length: %, title: %', film_.length, film_.title;
+  return film_.title || ' (' || film_.length || ' )';
+end;
+$$
+
+select ltitle(film_id) from film; 
+select 'film: ' || title from film;
+select $$film: $$ || title from film;
+
+---
+do $$
+	declare
+	rec record;
+	--rec film%rowtype;
+begin
+	for rec in select title, length
+		from film 
+		where length > 100
+		order by length
+	loop
+		raise notice 'film: % (%)', rec.title, rec.length;
+	end loop;
+end;
+$$
+language plpgsql;
+
+select * from film where length > 100 order by length;
