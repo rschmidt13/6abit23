@@ -125,3 +125,54 @@ $$
 language plpgsql;
 
 select * from film where length > 100 order by length;
+
+select 1;
+select 1::char;
+--select cast('a' as int);
+
+select upper('datenbanKEn-uNd-InFORMationSSYsteme');
+select lower('datenbanKEn-uNd-InFORMationSSYsteme');
+
+
+drop function if exists my_lower;
+
+create table alphabet (
+  key char primary key,
+  value char
+);
+
+insert into alphabet values
+('a', 'a'),
+('A', 'a'),
+('b', 'b'),
+('B', 'b');
+
+
+
+create or replace function my_lower(word varchar)
+returns varchar
+language plpgsql
+as $$
+declare
+    c char;
+    cl char;
+	chars char[];
+    ret varchar;
+    
+begin
+	ret = '';
+    chars = regexp_split_to_array(word, '');		
+	FOREACH c in array chars LOOP
+		--raise notice 'current char: %', c;
+		select value from alphabet where key = c into cl;
+		ret = ret || cl;
+    END LOOP;
+    return ret;
+end; $$
+
+
+select my_lower('BbaA');
+
+select 'a' || 'b';
+select * from film;
+select my_lower(title) from film;
